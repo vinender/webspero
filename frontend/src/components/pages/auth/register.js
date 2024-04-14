@@ -3,9 +3,12 @@ import { Box, Grid, TextField, Button, Typography } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { login } from '../../utils/redux/reducers/authActions';
+import { login, updateUser } from '../../utils/redux/reducers/authActions';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-
+import Uploader from '../../uploader/uploader';
+import { useNavigate } from 'react-router-dom';
+import http from '../../utils/http';
+import GooglePlacesAutocomplete from '../../GooglePlacesAutocomplete';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,44 +32,65 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
+
+
 export const RegisterForm = () => {
   const classes = useStyles();
-  const dispatch = useDispatch(); // Initialize useDispatch hook
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    phone: '',
     mobile: '',
     zipCode: '',
     profilePic: null,
+    address: '',
+    latitude: 0,
+    longitude: 0,
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, profilePic: e.target.files[0] });
+  const handleImageUrlChange = (imageUrl) => {
+    setFormData({ ...formData, profilePic: imageUrl });
   };
+
+  const handleAddressSelect = (address) => {
+    setFormData({
+      ...formData,
+      address: {
+      formattedAddress: address.formattedAddress,
+      latitude: address.latitude,
+      longitude: address.longitude,
+    }
+    });
+  };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  console.log(formData);
+  // return '';
     try {
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-      const response = await axios.post(`http://localhost:5000/register`, formDataToSend, {
+      const response = await http.post(`${process.env.REACT_APP_API_URL}/register`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
 
       console.log('Registration successful:', response.data);
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem('token', token);
+      }
       dispatch(login(response.data.user));
+      dispatch(updateUser(response.data.user));
+      navigate('/');
     } catch (error) {
       console.error('Registration failed:', error.response.data);
     }
@@ -104,6 +128,9 @@ export const RegisterForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
+              <GooglePlacesAutocomplete onAddressSelect={handleAddressSelect} />
+            </Grid>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -114,17 +141,6 @@ export const RegisterForm = () => {
                 id="password"
                 autoComplete="new-password"
                 value={formData.password}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                id="phone"
-                label="Phone"
-                name="phone"
-                value={formData.phone}
                 onChange={handleChange}
               />
             </Grid>
@@ -153,22 +169,7 @@ export const RegisterForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="profilePic"
-                type="file"
-                onChange={handleFileChange}
-              />
-              <label htmlFor="profilePic">
-                <Button
-                  variant="contained"
-                  component="span"
-                  fullWidth
-                >
-                  Upload Profile Picture
-                </Button>
-              </label>
+              <Uploader onImageUrlChange={handleImageUrlChange} />
             </Grid>
           </Grid>
           <Button

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
-const api = axios.create({
-  baseURL: process.env.API_URL,
+const http = axios.create({
+  baseURL: process.env.API_URL || 'http://localhost:5000',
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
@@ -10,14 +10,17 @@ const api = axios.create({
   },
 });
 
-// Initialize useHistory hook
-const navigate = useNavigate();
+// const navigate = useNavigate();
 
 // Add a request interceptor
-api.interceptors.request.use(
+http.interceptors.request.use(
   (config) => {
-    // Do something before request is sent
-    console.log('Request sent:', config);
+    // Retrieve token from localStorage
+    const token = localStorage.getItem('token');
+    // Add token to request header if it exists
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -28,7 +31,7 @@ api.interceptors.request.use(
 );
 
 // Add a response interceptor
-api.interceptors.response.use(
+http.interceptors.response.use(
   (response) => {
     // Do something with successful response
     console.log('Response received:', response);
@@ -43,11 +46,11 @@ api.interceptors.response.use(
     // Do something with response error
     console.error('Response error:', error);
     // Redirect user to '/' if they are not logged in
-    if (error.response.status === 401) {
-      navigate('/');
+    if (error.response && error.response.status === 401) {
+      // navigate('/login'); // Redirect to home page
     }
-    return Promise.reject(error);
+    return Promise.reject(error); // Properly return the error object
   }
 );
 
-export default api;
+export default http;

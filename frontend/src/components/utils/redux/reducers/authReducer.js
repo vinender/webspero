@@ -1,10 +1,13 @@
 // authReducer.js
 
-const initialState = {
-    isLoggedIn: false,
-    user: null,
+  const token = localStorage.getItem('token');
+  const initialState = {
+    isLoggedIn: !!token, // Check if token exists
+    token: token || null,
+    // Other user details if needed
   };
-  
+
+
   const authReducer = (state = initialState, action) => {
     switch (action.type) {
       case 'LOGIN':

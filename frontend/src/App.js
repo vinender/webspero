@@ -6,9 +6,14 @@ import { RegisterForm } from './components/pages/auth/register';
  import Home from './components/pages/home/home';
 import NearByUsers from './components/pages/near-by-users/near-by-users';
 import Profile from './components/pages/profile/profile';
-
+import useInitializeAuth from './components/utils/useInitializeAuth';
+import { Provider } from 'react-redux';
+import store from './components/utils/redux/store';
 function App() {
+
+  // useInitializeAuth();
   return (
+    // <Provider store={store}>
     <Router>
       <Routes>
       <Route
@@ -33,6 +38,7 @@ function App() {
         />
       </Routes>
     </Router>
+    // </Provider>
   );
 }
 

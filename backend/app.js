@@ -2,28 +2,34 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path'); // Import path module
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // Parse JSON bodies
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(cors());
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/webspero');
+mongoose.connect('mongodb://localhost:27017/websperodb');
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const authenticate = require('./middleware');
+ 
+app.use(express.json()); // Parse JSON bodies
 
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Mount routes
 app.use('/', userRoutes);
 app.use('/', authRoutes);
- 
-// Login route
-app.post('/login', (req, res) => {
-  // Logic for handling login request
-});
+app.use('/', uploadRoutes);
 
 // Root endpoint handler
 app.get('/', (req, res) => {

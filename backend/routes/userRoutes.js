@@ -5,7 +5,10 @@ const userController = require('../controllers/userController');
 
 
 
-router.put('/profile', userController.updateUserProfile);
+router.put('/profile/:id', userController.updateUserProfile);
+router.get('/users', userController.getAllUsers);
+router.get('/users/:id', userController.getUserById);
+router.get('/current-user', userController.getCurrentUser);
 
 
 // router.post('/user-verify', authController.userVerify);

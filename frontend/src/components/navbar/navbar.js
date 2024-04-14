@@ -4,13 +4,17 @@ import { AccountCircle, ExitToApp, Person } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
  import { Link } from 'react-router-dom';
 import { logout } from '../utils/redux/reducers/authActions';
+import { useNavigate } from 'react-router-dom';
+
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate('/login');
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);

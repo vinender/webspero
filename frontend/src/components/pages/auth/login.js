@@ -8,8 +8,11 @@ import axios from 'axios';
 import { Typography } from '@mui/material';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import { useDispatch } from 'react-redux'; // Import useDispatch hook
-import { login } from '../../utils/redux/reducers/authActions';
+import { login, updateUser } from '../../utils/redux/reducers/authActions';
  import { useNavigate } from 'react-router-dom';
+import http from '../../utils/http';
+
+
 const useStyles = makeStyles((theme) => ({
   formContainer: {
     width: '100%',
@@ -39,11 +42,12 @@ export const LoginForm = () => {
   const [password, setPassword] = useState('');
    const dispatch = useDispatch(); // Initialize useDispatch hook
   const navigate = useNavigate();
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://localhost:5000/login`, {
+      const response = await http.post(`${process.env.REACT_APP_API_URL}/login`, {
         email,
         password,
       });
@@ -52,8 +56,14 @@ export const LoginForm = () => {
       console.log('Login successful:', response.data);
 
       // Dispatch login action to update state
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem('token', token);
+      }
       dispatch(login(response.data.user));
-      navigate('/profile');
+      console.log(response.data.user);
+      dispatch(updateUser(response.data.user));
+      navigate('/');
     } catch (error) {
       // Handle login error (e.g., display error message)
       console.error('Login failed:', error.message);
