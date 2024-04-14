@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { useNavigate } from 'react-router-dom';
 
 const http = axios.create({
-  baseURL: process.env.API_URL || 'http://webspero-onrkalwqf-vinenders-projects.vercel.app',
+  baseURL: process.env.API_URL || 'http://localhost:5000',
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',

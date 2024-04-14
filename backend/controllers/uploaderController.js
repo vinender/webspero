@@ -28,7 +28,7 @@ const uploadImage = async (req, res) => {
     }
 
     // If file was successfully uploaded, send the URL of the uploaded image
-    const imageUrl = `http://webspero-onrkalwqf-vinenders-projects.vercel.app/` + req.file.path;
+    const imageUrl = `http://localhost:5000/` + req.file.path;
     res.json({ imageUrl: imageUrl });
   });
 };

@@ -20,7 +20,7 @@ const Uploader = ({ onImageUrlChange, profilePic }) => {
     formData.append('image', file);
 
     try {
-      const response = await http.post(`http://webspero-onrkalwqf-vinenders-projects.vercel.app/upload`, formData, {
+      const response = await http.post(`http://localhost:5000/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
